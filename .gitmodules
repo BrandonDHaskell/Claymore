@@ -1,0 +1,6 @@
+[submodule "external/clay"]
+	path = external/clay
+	url = git@github.com:nicbarker/clay.git
+[submodule "external/raylib"]
+	path = external/raylib
+	url = git@github.com:raysan5/raylib.git

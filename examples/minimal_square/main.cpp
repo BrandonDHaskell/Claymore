@@ -1,26 +1,18 @@
 #include "raylib.h"
+#include "clay.h"
+#include "../../include/claymore/layout/clay_layout_computer.h"
 
-#define CLAY_IMPLEMENTATION
-#include "../../external/clay/clay.h"
+// Global settings
+constexpr int screenWidth = 800;
+constexpr int screenHeight = 600;
+
+// Clay Adapter
+claymore::ClayAdapter layoutAdapter;
+
 
 //--------------------------------------------------
 // BEGIN: clay_adapter candidate code
 //--------------------------------------------------
-
-// Clay global settings
-constexpr int screenWidth = 800;
-constexpr int screenHeight = 600;
-uint32_t clayMemorySize = Clay_MinMemorySize();    // Clay arena
-
-// Simple text measurement function (needed by Clay)
-Clay_Dimensions MeasureTextFunc(Clay_StringSlice text, Clay_TextElementConfig* config, void* userData) {
-    (void)userData;
-    int fontSize = config->fontSize > 0 ? config->fontSize : 20;
-    return Clay_Dimensions {
-        static_cast<float>(MeasureTextEx(GetFontDefault(), text.chars, (float)fontSize, 0).x),
-        static_cast<float>(fontSize),
-    };
-}
 
 // Basic renderer for Clay rectangles using Raylib
 void DrawClayRenderCommands(const Clay_RenderCommandArray& commands) {
@@ -52,29 +44,12 @@ void DrawClayRenderCommands(const Clay_RenderCommandArray& commands) {
 
 int main() {
 
-    //--------------------------------------------------
-    // BEGIN: clay_adapter candidate code
-    //--------------------------------------------------
-    
     // Initialize Raylib
     SetConfigFlags(FLAG_WINDOW_RESIZABLE);
     InitWindow(screenWidth, screenHeight, "Claymore: Minimal Square");
     SetTargetFPS(60);
 
-    // Allocate Clay memory
-    void* memory = malloc(clayMemorySize);
-    Clay_Arena arena = Clay_CreateArenaWithCapacityAndMemory(clayMemorySize, memory);
-
-    // Optional error handler
-    Clay_ErrorHandler handler = { nullptr, nullptr };
-
-    // Initialize Clay
-    Clay_Context* ctx = Clay_Initialize(arena, Clay_Dimensions{ (float)screenWidth, (float)screenHeight }, handler);
-    Clay_SetMeasureTextFunction(MeasureTextFunc, nullptr);
-
-    //--------------------------------------------------
-    // END:   clay_adapter candidate code
-    //--------------------------------------------------
+    layoutAdapter.init(screenWidth, screenHeight);
 
     while (!WindowShouldClose()) {
         
@@ -82,7 +57,7 @@ int main() {
         // BEGIN: raylib_adapter candidate code
         //--------------------------------------------------
 
-        // Get and set window dimensions
+        // Get and set window dimensions (Raylib)
         int w = GetScreenWidth();
         int h = GetScreenHeight();
 
@@ -90,18 +65,8 @@ int main() {
         // END:   raylib_adapter candidate code
         //--------------------------------------------------
 
-
-        //--------------------------------------------------
-        // BEGIN: clay_adapter candidate code
-        //--------------------------------------------------
-
-        Clay_SetLayoutDimensions({ (float)w, (float)h });
-        // Per-frame layout setup
-        Clay_BeginLayout();
-
-        //--------------------------------------------------
-        // END: clay_adapter candidate code
-        //--------------------------------------------------
+        layoutAdapter.setLayoutSize(w, h);
+        layoutAdapter.beginLayout();
 
         //--------------------------------------------------
         // BEGIN: ui_system candidate code
@@ -134,16 +99,7 @@ int main() {
         // END:   ui_system candidate code
         //--------------------------------------------------
     
-        //--------------------------------------------------
-        // BEGIN: clay_adapter candidate code
-        //--------------------------------------------------
-
-        // End layout and get render commands
-        Clay_RenderCommandArray commands = Clay_EndLayout();
-
-        //--------------------------------------------------
-        // END: clay_adapter candidate code
-        //--------------------------------------------------
+        Clay_RenderCommandArray commands = layoutAdapter.endLayout();
 
         //--------------------------------------------------
         // BEGIN: raylib_adapter candidate code
@@ -163,7 +119,7 @@ int main() {
     }
 
     // Cleanup
-    free(memory);
+    layoutAdapter.shutdown();
     CloseWindow();
     return 0;
 }

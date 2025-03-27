@@ -1,3 +1,9 @@
+# Assuming Clay will be valid C
+# Suppressing C++ copmiler checks for Clay only
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    target_compile_options(claymore_layout PRIVATE -Wno-missing-field-initializers)
+endif()
+
 add_library(claymore_layout STATIC
     clay_adapter.cpp
 )

@@ -2,8 +2,10 @@ include(CMakePackageConfigHelpers)
 
 # Install Targets
 install(TARGETS
-    claymore_layout
-    claymore_renderer
+    claymore_layout_computers
+    claymore_renderers
+    claymore_displays
+    claymore_views
     clay
     EXPORT ClaymoreTargets
     ARCHIVE DESTINATION lib

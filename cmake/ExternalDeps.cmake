@@ -12,7 +12,13 @@ if(CLAYMORE_ENABLE_EXTERNALS)
     add_subdirectory(external/raylib)
 else()
     if(CLAYMORE_RAYLIB_PATH)
-        list(APPEND CMAKE_PREFIX_PATH "${CLAYMORE_RAYLIB_PATH}")
+        add_library(raylib STATIC IMPORTED GLOBAL)
+        set_target_properties(raylib PROPERTIES
+            IMPORTED_LOCATION "${CLAYMORE_RAYLIB_PATH}/lib/libraylib.a"
+            INTERFACE_INCLUDE_DIRECTORIES "${CLAYMORE_RAYLIB_PATH}/include"
+        )
+    else()
+        message(FATAL_ERROR "CLAYMORE_RAYLIB_PATH must be set when CLAMORE_ENABLE_EXTERNALS is OFF.")
     endif()
-    find_package(raylib REQUIRED)
+    # find_package(raylib REQUIRED)
 endif()

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.28)
+cmake_minimum_required(VERSION 3.20)
 project(Claymore LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 20)
@@ -9,20 +9,26 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 include(cmake/CompilerSettings.cmake)
 include(cmake/ExternalDeps.cmake)
 
-include_directories(${CMAKE_SOURCE_DIR}/include)
-
-add_subdirectory(src/layout)
-add_library(Claymore::claymore_layout ALIAS claymore_layout)
-
-add_subdirectory(src/renderer)
-add_library(Claymore::claymore_renderer ALIAS claymore_renderer)
-
-add_library(claymore INTERFACE)
-target_link_libraries(claymore INTERFACE
-    Claymore::claymore_layout
-    Claymore::claymore_renderer
-)
-
+# Subdirectories
+add_subdirectory(src/layout_computers)
+add_subdirectory(src/renderers)
+add_subdirectory(src/displays)
+add_subdirectory(src/views)
+add_subdirectory(src/core)
 add_subdirectory(examples/minimal_square)
 
 include(cmake/InstallConfig.cmake)
+
+# Interface target to group components
+add_library(Claymore INTERFACE)
+target_link_libraries(Claymore INTERFACE
+    Claymore::layout_computers
+    Claymore::renderers
+    Claymore::displays
+    Claymore::views
+)
+
+add_library(Claymore::claymore INTERFACE IMPORTED GLOBAL)
+set_target_properties(Claymore::claymore PROPERTIES
+    INTERFACE_LINK_LIBRARIES "Claymore::claymore_core;Claymore::claymore_layout_computers;Claymore::claymore_renderers;Claymore::claymore_displays;Claymore::claymore_views"
+)

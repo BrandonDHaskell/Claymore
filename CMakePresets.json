@@ -1,0 +1,32 @@
+{
+    "version": 3,
+    "cmakeMinimumRequired": {
+      "major": 3,
+      "minor": 23
+    },
+    "configurePresets": [
+      {
+        "name": "dev",
+        "displayName": "Claymore Dev Build",
+        "description": "Development build with external deps off, Raylib path set.",
+        "generator": "Ninja",
+        "binaryDir": "${sourceDir}/build",
+        "cacheVariables": {
+          "CMAKE_CXX_STANDARD": "23",
+          "CLAYMORE_ENABLE_EXTERNALS": "OFF",
+          "CLAY_INCLUDE_ALL_EXAMPLES": "ON",
+          "CLAYMORE_RAYLIB_PATH": "$env{HOME}/libs/raylib-dev",
+          "CMAKE_INSTALL_PREFIX": "${sourceDir}/_install",
+          "CLAYMORE_DEV_MODE": "ON"
+        }
+      }
+    ],
+    "buildPresets": [
+      {
+        "name": "dev",
+        "configurePreset": "dev",
+        "description": "Build Claymore in dev mode"
+      }
+    ]
+  }
+  

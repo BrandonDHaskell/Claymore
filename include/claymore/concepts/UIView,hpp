@@ -1,0 +1,13 @@
+#pragma once
+#include <concepts>
+
+namespace Claymore {
+
+// A UIView represents a top-level UI container or "page".
+// It must implement buildLayout(), and in future can expose routing, theme, etc.
+template<typename T>
+concept UIView = requires(T t) {
+    { t.buildLayout() } -> std::same_as<void>;
+};
+
+} // namespace Claymore
